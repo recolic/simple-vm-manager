@@ -1,0 +1,5 @@
+# hostname,cores,mem,disk,base-img,username,password,ports
+
+instance1,4,8G,60G,focal-server-cloudimg-amd64.img,r,1,22
+gitlab-ci,2,2G,40G,focal-server-cloudimg-amd64.img,r,1,22
+httptest,1,1G,20G,focal-server-cloudimg-amd64.img,r,1,22 80 443
