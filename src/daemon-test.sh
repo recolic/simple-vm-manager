@@ -55,7 +55,7 @@ function create_vm_from () {
         ( cd "$workdir/vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data )
         qemu-img create -f qcow2 -F qcow2 -o backing_file=base/focal-server-cloudimg-amd64.img "$workdir/vm/$name/disk.img"
         qemu-img resize "$workdir/vm/$name/disk.img" "$disk"
-        qemu-system-x86_64 -drive file="$workdir/vm/$name/disk.img",if=virtio -cdrom "$workdir/vm/$name/initimg.iso" -m "$ram" -cpu host -smp "$cores" -vnc "$vnc" --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd &
+        qemu-system-x86_64 -drive file="$workdir/vm/$name/disk.img",if=virtio -cdrom "$workdir/vm/$name/initimg.iso" -m "$ram" -cpu host -smp "$cores" -vnc "$vnc" --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 -net user,hostfwd=tcp::30472-:22 &
         pid=$!
         echo PID=$pid
         # TODO
