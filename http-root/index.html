@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Better dridash</title>
+
+        <link href="res/bulma.min.css" rel="stylesheet">
+        <script src="res/jquery.min.js"></script> 
+        <script src="res/sheet/vendor/select2/select2.min.js"></script> 
+<script src="strftime.js"></script>
+<script src="pako.js"></script>
+<script src="template.js"></script>
+<script src="base64zip.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="res/sheet/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/vendor/perfect-scrollbar/perfect-scrollbar.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/css/util.css">
+	<link rel="stylesheet" type="text/css" href="res/sheet/css/main.css">
+    </head>
+    <body onload=refresh()>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="https://www.recolic.net/">Better dridash for overlake dev</a>
+            </div>
+        </nav>
+<script>
+
+</script>
+<section class="section">
+    <div class="container">
+<p>Existing VMs:</p><br/>
+
+<p>note: modlab node e4c01419-44b8-c5bd-3e6b-5737fc3a43d2</p>
+
+<!-- Template
+            <div class="field">
+                <label class="label" for="domain">node_id_or_hostname</label>
+                <input class="input" type="text" name="domain" autocomplete="off" id="node_id_or_hostname" onfocusout="refresh();" value="all">
+            </div>
+-->
+            <div class="field">
+                <p class="control">
+                    <button onclick="return refresh();" class="button is-success">Generate</button>
+                </p>
+            </div>
+    </div>
+</section>
+<section class="hero">
+    <div class="container">
+<p id=link_out>AZ board:</p>
+    </div>
+</section>
+
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+
+<hr class="dashed">
+<hr class="dashed">
+
+<script>
+function refresh22() {
+	console.log("refresh22 reached");
+	let did = document.getElementById('did');
+	if (did.value == "") return;
+
+    let outputLink = "https://managenetperf.azurewebsites.net/Deployment/History?partitionKey=" +did.value+ "&rowKey=1__Client"
+
+	let outputEle = document.getElementById('link_out22');
+	outputEle.innerHTML = "netperf link: <br /><a target='_blank' href='"+outputLink+"'>"+outputLink+"</a>"
+		;
+}
+
+</script>
+<section class="section">
+    <div class="container">
+<h1>deployment id to link (netperf)</h1>
+
+            <div class="field">
+                <label class="label" for="domain22">deployment id</label>
+                <input class="input" type="text" name="domain22" autocomplete="off" id="did" onfocusout="refresh22();" value="">
+            </div>
+
+
+<div class="field">
+                <p class="control">
+                    <button onclick="return refresh22();" class="button is-success">Generate</button>
+                </p>
+            </div>
+    </div>
+</section>
+<section class="hero">
+    <div class="container">
+<p id=link_out22>AZ board:</p>
+    </div>
+</section>
+
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------- -->
+
+<hr class="dashed">
+<hr class="dashed">
+
+
+
+<section class="hero">
+    <div class="container">
+<h1>pipeline links:</h1>
+<a target='_blank' href="https://msazure.visualstudio.com/One/_build?definitionId=285519&_a=summary">SMAgent build pipeline</a><br />
+<a target='_blank' href="https://msazure.visualstudio.com/One/_build?definitionId=243959&_a=summary">VFP build pipeline</a><br />
+<a target='_blank' href="https://msazure.visualstudio.com/One/_build?definitionId=245730&_a=summary">NDPA build pipeline</a>
+    </div>
+</section>
+
+
+
+
+</body></html>
