@@ -1,11 +1,10 @@
-# aria2c 'https://cloud-images.ubuntu.com/focal/20231003/focal-server-cloudimg-amd64.img' -x2
-# https://medium.com/@art.vasilyev/use-ubuntu-cloud-image-with-kvm-1f28c19f82f8
+#!/bin/bash
+# pacman -S cdrkit qemu-base
 
-cp template/*-data .
-genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data
-qemu-img create -f qcow2 -F qcow2 -o backing_file=base/focal-server-cloudimg-amd64.img instance-1.qcow2
-qemu-img resize instance-1.qcow2 60G
-qemu-system-x86_64 -drive file=instance-1.qcow2,if=virtio -cdrom initimg.iso -m 8G -cpu host -smp 4 -vnc :5 --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd
+workdir=./data
+mkdir -p "$workdir"
+cd "$workdir"
+mkdir -p base vm tmp
 
 function generate_metadata () {
     local name=$1
@@ -32,8 +31,6 @@ ssh_pwauth: True
 "
 }
 
-workdir=./data
-mkdir -p "$workdir/base" "$workdir/vm" "$workdir/tmp"
 function create_vm_from () {
     local name=$1
     local cores=$2
@@ -45,21 +42,28 @@ function create_vm_from () {
     local vnc=$8
     local ports="$9"
 
-    if [[ -f "$workdir/vm/$name/disk.img" ]]; then
+    [[ -f "base/focal-server-cloudimg-amd64.img" ]] || aria2c -o "base/focal-server-cloudimg-amd64.img" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo "Failed to download ubuntu cloudimg" || return $?
+
+    if [[ -f "vm/$name/disk.img" ]]; then
         # simply start it
-        return
+        :
     else
+        rm -rf "vm/$name" ; mkdir -p "vm/$name"
         # create and start it
-        generate_metadata "$name" > "$workdir/vm/$name/meta-data"
-        generate_userdata "$username" "$password" "$name" > "$workdir/vm/$name/user-data"
-        ( cd "$workdir/vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data )
-        qemu-img create -f qcow2 -F qcow2 -o backing_file=base/focal-server-cloudimg-amd64.img "$workdir/vm/$name/disk.img"
-        qemu-img resize "$workdir/vm/$name/disk.img" "$disk"
-        qemu-system-x86_64 -drive file="$workdir/vm/$name/disk.img",if=virtio -cdrom "$workdir/vm/$name/initimg.iso" -m "$ram" -cpu host -smp "$cores" -vnc "$vnc" --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 -net user,hostfwd=tcp::30472-:22 &
-        pid=$!
-        echo PID=$pid
-        # TODO
+        generate_metadata "$name" > "vm/$name/meta-data" || return $?
+        generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
+        ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
+        qemu-img create -f qcow2 -F qcow2 -o backing_file="../../base/focal-server-cloudimg-amd64.img" "vm/$name/disk.img" || return $?
+        qemu-img resize "vm/$name/disk.img" "$disk" || return $?
     fi
+    # start it
+    qemu-system-x86_64 -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -m "$ram" -cpu host -smp "$cores" -vnc "$vnc" --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 -net user,hostfwd=tcp::30472-:22 &
+    pid=$!
+    echo PID=$pid
+    # TODO
 }
 
+[[ $2 = "" ]] && echo "Temp script to create VM. Usage: $0 MY_GOOD_VM11 :11" && exit 1
+create_vm_from "$1" 2 4G 50G __hardcoded__ r 1 "$2" __hardcoded__ || exit $?
+echo "DEBUG: sshpass -p 1 ssh -p 30472 r@localhost"
 
