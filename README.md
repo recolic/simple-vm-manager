@@ -16,7 +16,7 @@ Turn your server/desktop to DigitalOcean / Linode / Vultr with a super-simple sc
 
 qemu, bash, sed
 
-Optional: aria2c (simply replace aria2c with curl if you don't like it)
+Any of them: aria2c / wget / curl
 
 > ArchLinux user: simply run `pacman -S cdrkit qemu-base aria2`
 
