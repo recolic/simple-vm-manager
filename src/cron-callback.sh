@@ -37,7 +37,9 @@ ssh_pwauth: True
 function download_cloud_img_if_not_exist () {
     local cloudimg="$1"
     [[ "$1" != "focal-server-cloudimg-amd64.img" ]] && echo2 "ERROR: cloudimg not supported"
-    [[ -f "base/$cloudimg" ]] || aria2c -o "base/$cloudimg" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo2 "Failed to download ubuntu cloudimg" || return $?
+    [[ -f "base/$cloudimg" ]] && return
+    echo2 "+ Downloading cloudimg $cloudimg..."
+    aria2c -o "base/$cloudimg" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo2 "Failed to download ubuntu cloudimg" || return $?
 }
 
 function create_vm_if_not_exist () {
@@ -55,6 +57,7 @@ function create_vm_if_not_exist () {
         download_cloud_img_if_not_exist "$cloudimg" || return $?
         rm -rf "vm/$name" ; mkdir -p "vm/$name"
         # create it
+        echo2 "+ Creating VM image $name with options $@..."
         generate_metadata "$name" > "vm/$name/meta-data" || return $?
         generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
         ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
@@ -72,11 +75,12 @@ function start_vm_if_not_running () {
     local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
 
     # Check if qemu already running for this instance.
-    ps aux | grep -F "--uuid $uuid" | grep qemu && return 0
+    ps aux | grep -F "uuid $uuid" | grep qemu && return 0
 
     # start it
     [[ ! -f "vm/$name/disk.img" ]] && echo2 "In start_vm, disk image vm/$name/disk.img doesn't exist. Did init_vm fail?" && return 1
-    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -cpu host --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 "${options[@]}" & disown
+    echo2 "+ Starting VM $name with options_txt '$options_txt' and uuid $uuid..."
+    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -cpu host --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 "${options[@]}" >> tmp/qemu.log 2>&1 & disown
 }
 
 function do_init () {
