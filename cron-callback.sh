@@ -1,5 +1,4 @@
 #!/bin/bash
-# pacman -S cdrkit qemu-base
 
 workdir=./data
 mkdir -p "$workdir"
