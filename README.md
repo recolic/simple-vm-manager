@@ -43,3 +43,6 @@ Please wait for at least 3 minutes and try again. cloud-init is slow.
 
 You can still create a VM in other way (like plain qemu), and put the disk image into `data/vm/VM_NAME/disk.img`. Everything will work perfectly.
 
+## Thanks
+
+ChatGPT
