@@ -28,11 +28,18 @@ Optional: aria2c (simply replace aria2c with curl if you don't like it)
 
 ## Supported cloudimg
 
-
+|||
+| ---              | ---                              |
+|Ubuntu 2204 LTS   |`focal-server-cloudimg-amd64.img` |
+|Arch Linux Rolling|`Arch-Linux-x86_64-cloudimg.qcow2`|
 
 ## FAQ
 
-## My desired OS is not supported yet...
+### SSH not working for my new VM
+
+Please wait for at least 3 minutes and try again. cloud-init is slow.
+
+### My desired OS is not supported yet...
 
 You can still create a VM in other way (like plain qemu), and put the disk image into `data/vm/VM_NAME/disk.img`. Everything will work perfectly.
 
