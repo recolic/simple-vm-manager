@@ -38,15 +38,12 @@ function download_cloud_img_if_not_exist () {
 }
 
 function create_vm_if_not_exist () {
+    # TODO: support create VM from existing qcow2 snapshot
     local name=$1
-    local cores=$2
-    local ram=$3
-    local disk=$4
-    local cloudimg=$5
-    local username=$6
-    local password=$7
-    local vnc=$8
-    local ports="$9"
+    local cloudimg=$2
+    local disk=$3
+    local username=$4
+    local password="$5"
 
     if [[ -f "vm/$name/disk.img" ]]; then
         # already exists
@@ -67,14 +64,42 @@ function start_vm_if_not_running () {
     local name=$1
     local options="$2"
 
+    # For tracking started instance
+    local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
+
+    # Check if qemu already running for this instance.
+    ps aux | grep -F "--uuid $uuid" | grep qemu && return 0
+
     # start it
-    qemu-system-x86_64 -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -cpu host --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 &
-    pid=$!
-    echo PID=$pid
-    # TODO
+    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -cpu host --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 "${options[@]}" & disown
 }
 
-[[ $2 = "" ]] && echo "Temp script to create VM. Usage: $0 MY_GOOD_VM11 :11" && exit 1
-create_vm_from "$1" 2 4G 50G __hardcoded__ r 1 "$2" __hardcoded__ || exit $?
-echo "DEBUG: sshpass -p 1 ssh -p 30472 r@localhost"
+# [[ $2 = "" ]] && echo "Temp script to create VM. Usage: $0 MY_GOOD_VM11 :11" && exit 1
+# create_vm_from "$1" 2 4G 50G __hardcoded__ r 1 "$2" __hardcoded__ || exit $?
+# echo "DEBUG: sshpass -p 1 ssh -p 30472 r@localhost"
+
+while IFS= read -r line; do
+    # Ignore lines starting with #
+    if [[ "$line" =~ ^\# ]]; then
+        continue
+    fi
+
+    # Trim leading and trailing whitespaces
+    line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+    # Check if the line is non-empty
+    if [ -n "$line" ]; then
+        # Parse the line as "name;cloudimg;disk;username;password"
+        IFS=';' read -r name cloudimg disk username password <<< "$line"
+
+        # Print the parsed values
+        echo "Name: $name"
+        echo "Cloud Image: $cloudimg"
+        echo "Disk: $disk"
+        echo "Username: $username"
+        echo "Password: $password"
+        echo "---------------------"
+    fi
+done < ./init.settings
+
 
