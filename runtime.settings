@@ -1,4 +1,4 @@
 # name;options (name will be trimmed, options will be passed as-is)
 instance1;-m 2G -smp 2 -vnc :11 -net user,hostfwd=tcp::30471-:22
-gitlab-ci;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22
-#httptest ;-m 1G -smp 1 -vnc :13 -net user,hostfwd=tcp::30474-:22,hostfwd=tcp::30480-:80
+gitlab-ci;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22,hostfwd=tcp::30474-:8080
+devbox   ;-m 6G -smp 6 -vnc :13 -net user,hostfwd=tcp::30475-:3389 -cpu host,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time

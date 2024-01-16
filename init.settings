@@ -1,4 +1,8 @@
+## init VM from cloudimg
 # name;cloudimg;disk;username;password (space will be trimmed)
 instance1;focal-server-cloudimg-amd64.img;60G;r;1
 gitlab-ci;Arch-Linux-x86_64-cloudimg.qcow2;40G;r;1
-#httptest ;focal-server-cloudimg-amd64.img;20G;r;1
+
+## or init VM from pre-deployed backing image (please put it into data/base/)
+# name;existing_img_fname
+devbox;win10pro-22h2-virtio-uefi.qcow2

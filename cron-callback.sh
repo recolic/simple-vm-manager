@@ -64,13 +64,19 @@ function create_vm_if_not_exist () {
 
     download_cloud_img_if_not_exist "$cloudimg" || return $?
     rm -rf "vm/$name" ; mkdir -p "vm/$name"
-    # create it
+
     echo2 "+ Creating VM image $name with options $@..."
-    generate_metadata "$name" > "vm/$name/meta-data" || return $?
-    generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
-    ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
-    qemu-img create -f qcow2 -F qcow2 -o backing_file="../../base/$cloudimg" "vm/$name/disk.img" || return $?
-    qemu-img resize "vm/$name/disk.img" "$disk" || return $?
+    if [ -z "$disk" ]; then
+        # create from cloudimg
+        generate_metadata "$name" > "vm/$name/meta-data" || return $?
+        generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
+        ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
+        qemu-img create -f qcow2 -F qcow2 -b "../../base/$cloudimg" "vm/$name/disk.img" || return $?
+        qemu-img resize "vm/$name/disk.img" "$disk" || return $?
+    else
+        # create from baseimg
+        qemu-img create -f qcow2 -F qcow2 -b "../../base/$cloudimg" "vm/$name/disk.img" || return $?
+    fi
 }
 
 function start_vm_if_not_running () {
@@ -104,9 +110,11 @@ function do_init () {
             # Parse the line as "name;cloudimg;disk;username;password", trim space
             IFS=';' read -r name cloudimg disk username password <<< "$(echo "$line" | tr -s '[:space:]' ';')"
 
-            # Check if all fields are non-empty
+            # 2 options or 5 options allowed, otherwise bad config line.
             if [ -n "$name" ] && [ -n "$cloudimg" ] && [ -n "$disk" ] && [ -n "$username" ] && [ -n "$password" ]; then
                 create_vm_if_not_exist "$name" "$cloudimg" "$disk" "$username" "$password" || echo2 "Failed to create_vm_if_not_exist. $?"
+            elif [ -n "$name" ] && [ -n "$cloudimg" ] && [ ! -n "$disk" ] && [ ! -n "$username" ] && [ ! -n "$password" ]; then
+                create_vm_if_not_exist "$name" "$cloudimg" || echo2 "Failed to create_vm_if_not_exist. $?"
             else
                 echo2 "Error: Bad configuration line: $line"
             fi
