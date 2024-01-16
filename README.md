@@ -22,9 +22,11 @@ qemu, bash, sed
 
 1. Download this repo to anywhere.
 2. Modify `init.settings` and `runtime.settings`.
-3. Add ``
+3. Add `*/2 * * * * cd /path/to/my/repo && ./cron-callback.sh` into your crontab.
 
-## If you want to modify the configuration...
+## FAQ
 
-If you need to do some customization, modify `vps-provider.conf`. The default config usually works fine.
+## My desired OS is not supported yet...
+
+You can still create a VM in other way (like plain qemu), and put the disk image into `data/vm/VM_NAME/disk.img`. Everything will work perfectly.
 
