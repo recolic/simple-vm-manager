@@ -1,18 +1,28 @@
-# simple-vps-provider
+# Super-Simple QEMU manager script
+
+> Designed for single user desktop / home server.
 
 Turn your server/desktop to DigitalOcean / Linode / Vultr with a super-simple script.
 
-No complex configuration, no fancy dependency, no management cost. This project is designed for single user home server. It allows you to easily get a server for testing and dev.
+- Easy setup: No dependency, no libvirt, no user/group/pool config.
+
+- Easy configuration: Simple list your VMs in config file.
+
+- Easy management: Everything in one single directory.
+
+- Easy customization: Just a naive bash script. Everyone knows how to customize.
 
 ## Dependency
 
-qemu, bash
+qemu, bash, sed
+
+> ArchLinux user: simply run `pacman -S cdrkit qemu-base`
 
 ## Usage
 
-1. Download release and put it in any directory you love.
-2. Run `./vps-provider-daemon` in background. (Optional: run it on system startup)
-3. Access `http://localhost:6083` and enjoy.
+1. Download this repo to anywhere.
+2. Modify `init.settings` and `runtime.settings`.
+3. Add ``
 
 ## If you want to modify the configuration...
 
