@@ -30,6 +30,10 @@ hostname: $name
 
 # allow password login
 ssh_pwauth: True
+
+# # bug fixes
+# runcmd:
+#   - [ -f /usr/bin/pacman ] && systemctl enable sshd --now
 "
 }
 
