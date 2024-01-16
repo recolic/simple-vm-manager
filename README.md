@@ -16,13 +16,19 @@ Turn your server/desktop to DigitalOcean / Linode / Vultr with a super-simple sc
 
 qemu, bash, sed
 
-> ArchLinux user: simply run `pacman -S cdrkit qemu-base`
+Optional: aria2c (simply replace aria2c with curl if you don't like it)
+
+> ArchLinux user: simply run `pacman -S cdrkit qemu-base aria2`
 
 ## Usage
 
 1. Download this repo to anywhere.
 2. Modify `init.settings` and `runtime.settings`.
 3. Add `*/2 * * * * cd /path/to/my/repo && ./cron-callback.sh` into your crontab.
+
+## Supported cloudimg
+
+
 
 ## FAQ
 

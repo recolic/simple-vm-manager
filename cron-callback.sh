@@ -28,18 +28,22 @@ password: $password
 chpasswd: { expire: False }
 hostname: $name
 
-# configure sshd to allow users logging in using password 
-# rather than just keys
+# allow password login
 ssh_pwauth: True
 "
 }
 
 function download_cloud_img_if_not_exist () {
     local cloudimg="$1"
-    [[ "$1" != "focal-server-cloudimg-amd64.img" ]] && echo2 "ERROR: cloudimg not supported"
     [[ -f "base/$cloudimg" ]] && return
+
+    declare -A knowledge
+    knowledge["focal-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    knowledge["Arch-Linux-x86_64-cloudimg.qcow2"]=https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2
+    [ ! "${knowledge[$cloudimg]+abc}" ] && echo2 "Unknown cloudimg $cloudimg. cannot download it." && return 1
+
     echo2 "+ Downloading cloudimg $cloudimg..."
-    aria2c -o "base/$cloudimg" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo2 "Failed to download ubuntu cloudimg" || return $?
+    aria2c -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
 }
 
 function create_vm_if_not_exist () {
@@ -50,20 +54,18 @@ function create_vm_if_not_exist () {
     local username=$4
     local password="$5"
 
-    if [[ -f "vm/$name/disk.img" ]]; then
-        # already exists
-        :
-    else
-        download_cloud_img_if_not_exist "$cloudimg" || return $?
-        rm -rf "vm/$name" ; mkdir -p "vm/$name"
-        # create it
-        echo2 "+ Creating VM image $name with options $@..."
-        generate_metadata "$name" > "vm/$name/meta-data" || return $?
-        generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
-        ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
-        qemu-img create -f qcow2 -F qcow2 -o backing_file="../../base/focal-server-cloudimg-amd64.img" "vm/$name/disk.img" || return $?
-        qemu-img resize "vm/$name/disk.img" "$disk" || return $?
-    fi
+    # Check if disk img already exists.
+    [[ -f "vm/$name/disk.img" ]] && return
+
+    download_cloud_img_if_not_exist "$cloudimg" || return $?
+    rm -rf "vm/$name" ; mkdir -p "vm/$name"
+    # create it
+    echo2 "+ Creating VM image $name with options $@..."
+    generate_metadata "$name" > "vm/$name/meta-data" || return $?
+    generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
+    ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
+    qemu-img create -f qcow2 -F qcow2 -o backing_file="../../base/$cloudimg" "vm/$name/disk.img" || return $?
+    qemu-img resize "vm/$name/disk.img" "$disk" || return $?
 }
 
 function start_vm_if_not_running () {
