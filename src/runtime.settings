@@ -1,4 +1,4 @@
-# name;options
-instance1;focal-server-cloudimg-amd64.img;60G;-m 2G -smp 2 -vnc :11 -net user,hostfwd=tcp::30472-:22
-gitlab-ci;focal-server-cloudimg-amd64.img;40G;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22
-httptest ;focal-server-cloudimg-amd64.img;20G;-m 1G -smp 1 -vnc :13 -net user,hostfwd=tcp::30474-:22
+# name;options (space in name will be trimmed)
+instance1;-m 2G -smp 2 -vnc :11 -net user,hostfwd=tcp::30472-:22
+gitlab-ci;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22
+httptest ;-m 1G -smp 1 -vnc :13 -net user,hostfwd=tcp::30474-:22

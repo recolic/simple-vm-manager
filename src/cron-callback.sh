@@ -3,9 +3,12 @@
 
 workdir=./data
 mkdir -p "$workdir"
-cd "$workdir"
+cd "$workdir" || exit $?
 mkdir -p base vm tmp
 
+function echo2 () {
+    echo "$@" 1>&2
+}
 function generate_metadata () {
     local name=$1
     echo "local-hostname: $name"
@@ -78,28 +81,50 @@ function start_vm_if_not_running () {
 # create_vm_from "$1" 2 4G 50G __hardcoded__ r 1 "$2" __hardcoded__ || exit $?
 # echo "DEBUG: sshpass -p 1 ssh -p 30472 r@localhost"
 
-while IFS= read -r line; do
-    # Ignore lines starting with #
-    if [[ "$line" =~ ^\# ]]; then
-        continue
-    fi
+function do_init () {
+    while IFS= read -r line; do
+        # Check if the line is non-empty
+        if [ -n "$line" ]; then
+            # Parse the line as "name;cloudimg;disk;username;password", trim space
+            IFS=';' read -r name cloudimg disk username password <<< "$(echo "$line" | tr -s '[:space:]' ';')"
 
-    # Trim leading and trailing whitespaces
-    line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+            # Check if all fields are non-empty
+            if [ -n "$name" ] && [ -n "$cloudimg" ] && [ -n "$disk" ] && [ -n "$username" ] && [ -n "$password" ]; then
+                create_vm_if_not_exist "$name" "$cloudimg" "$disk" "$username" "$password" || echo2 "Failed to create_vm_if_not_exist. $?"
+            else
+                echo2 "Error: Bad configuration line: $line"
+            fi
+        fi
+    done < ../init.settings
+}
 
-    # Check if the line is non-empty
-    if [ -n "$line" ]; then
-        # Parse the line as "name;cloudimg;disk;username;password"
-        IFS=';' read -r name cloudimg disk username password <<< "$line"
-
-        # Print the parsed values
-        echo "Name: $name"
-        echo "Cloud Image: $cloudimg"
-        echo "Disk: $disk"
-        echo "Username: $username"
-        echo "Password: $password"
-        echo "---------------------"
-    fi
-done < ./init.settings
-
+function do_start () {
+    while IFS= read -r line; do
+        # Ignore lines starting with #
+        if [[ "$line" =~ ^\# ]]; then
+            continue
+        fi
+    
+        # Trim leading and trailing whitespaces
+        line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    
+        # Check if the line is non-empty
+        if [ -n "$line" ]; then
+            # Parse the line as "name;options", only trim space in name, options can contain ;
+            name=$(echo "$line" | sed -e 's/[[:space:]]*;.*$//' -e 's/^[[:space:]]*//')
+            options=$(echo "$line" | sed 's/^[^:]*://')
+    
+            # Check if the name is empty
+            if [ -n "$name" ]; then
+                # Print the parsed values
+                echo "Name: $name|"
+                echo "Options: $options|"
+                echo "---------------------"
+            else
+                # Print an error message for empty name
+                echo "Error: Name is empty. Skipping the line."
+            fi
+        fi
+    done < ../runtime.settings
+}
 

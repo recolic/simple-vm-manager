@@ -1,4 +1,4 @@
-# name;cloudimg;disk;username;password
+# name;cloudimg;disk;username;password (space will be trimmed)
 instance1;focal-server-cloudimg-amd64.img;60G;r;1
 gitlab-ci;focal-server-cloudimg-amd64.img;60G;r;1
 httptest ;focal-server-cloudimg-amd64.img;60G;r;1
