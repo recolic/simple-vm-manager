@@ -1,6 +1,6 @@
 # simple-vps-provider
 
-Turn your home server to DigitalOcean / Linode / Vultr with a simple script.
+Turn your server/desktop to DigitalOcean / Linode / Vultr with a super-simple script.
 
 No complex configuration, no fancy dependency, no management cost. This project is designed for single user home server. It allows you to easily get a server for testing and dev.
 
