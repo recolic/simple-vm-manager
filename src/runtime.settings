@@ -1,4 +1,4 @@
-# name;options (space in name will be trimmed)
+# name;options (name will be trimmed, options will be passed as-is)
 instance1;-m 2G -smp 2 -vnc :11 -net user,hostfwd=tcp::30472-:22
-gitlab-ci;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22
-httptest ;-m 1G -smp 1 -vnc :13 -net user,hostfwd=tcp::30474-:22
+#gitlab-ci;-m 4G -smp 4 -vnc :12 -net user,hostfwd=tcp::30473-:22
+#httptest ;-m 1G -smp 1 -vnc :13 -net user,hostfwd=tcp::30474-:22

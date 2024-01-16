@@ -36,8 +36,8 @@ ssh_pwauth: True
 
 function download_cloud_img_if_not_exist () {
     local cloudimg="$1"
-    [[ "$1" != "focal-server-cloudimg-amd64.img" ]] && echo "ERROR: cloudimg not supported"
-    [[ -f "base/$cloudimg" ]] || aria2c -o "base/$cloudimg" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo "Failed to download ubuntu cloudimg" || return $?
+    [[ "$1" != "focal-server-cloudimg-amd64.img" ]] && echo2 "ERROR: cloudimg not supported"
+    [[ -f "base/$cloudimg" ]] || aria2c -o "base/$cloudimg" https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img || ! echo2 "Failed to download ubuntu cloudimg" || return $?
 }
 
 function create_vm_if_not_exist () {
@@ -65,7 +65,8 @@ function create_vm_if_not_exist () {
 
 function start_vm_if_not_running () {
     local name=$1
-    local options="$2"
+    local options_txt="$2"
+    read -a options <<< "$options_txt"
 
     # For tracking started instance
     local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
@@ -74,15 +75,18 @@ function start_vm_if_not_running () {
     ps aux | grep -F "--uuid $uuid" | grep qemu && return 0
 
     # start it
+    [[ ! -f "vm/$name/disk.img" ]] && echo2 "In start_vm, disk image vm/$name/disk.img doesn't exist. Did init_vm fail?" && return 1
     nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cdrom "vm/$name/initimg.iso" -cpu host --enable-kvm -bios /usr/share/edk2-ovmf/x64/OVMF.fd -net nic,model=rtl8139 "${options[@]}" & disown
 }
 
-# [[ $2 = "" ]] && echo "Temp script to create VM. Usage: $0 MY_GOOD_VM11 :11" && exit 1
-# create_vm_from "$1" 2 4G 50G __hardcoded__ r 1 "$2" __hardcoded__ || exit $?
-# echo "DEBUG: sshpass -p 1 ssh -p 30472 r@localhost"
-
 function do_init () {
     while IFS= read -r line; do
+        # Ignore lines starting with #
+        if [[ "$line" =~ ^\# ]]; then
+            continue
+        fi
+        # Trim leading and trailing whitespaces
+        line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
         # Check if the line is non-empty
         if [ -n "$line" ]; then
             # Parse the line as "name;cloudimg;disk;username;password", trim space
@@ -104,27 +108,23 @@ function do_start () {
         if [[ "$line" =~ ^\# ]]; then
             continue
         fi
-    
         # Trim leading and trailing whitespaces
         line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-    
         # Check if the line is non-empty
         if [ -n "$line" ]; then
             # Parse the line as "name;options", only trim space in name, options can contain ;
             name=$(echo "$line" | sed -e 's/[[:space:]]*;.*$//' -e 's/^[[:space:]]*//')
-            options=$(echo "$line" | sed 's/^[^:]*://')
+            options=$(echo "$line" | sed 's/^[^;]*;//')
     
             # Check if the name is empty
             if [ -n "$name" ]; then
-                # Print the parsed values
-                echo "Name: $name|"
-                echo "Options: $options|"
-                echo "---------------------"
+                start_vm_if_not_running "$name" "$options" || echo2 "Failed to start_vm_if_not_running. $?"
             else
-                # Print an error message for empty name
-                echo "Error: Name is empty. Skipping the line."
+                echo2 "Error: Bad configuration line: $line"
             fi
         fi
     done < ../runtime.settings
 }
 
+do_init
+do_start
