@@ -62,12 +62,12 @@ function create_vm_if_not_exist () {
     # Check if disk img already exists.
     [[ -f "vm/$name/disk.img" ]] && return
 
-    download_cloud_img_if_not_exist "$cloudimg" || return $?
     rm -rf "vm/$name" ; mkdir -p "vm/$name"
 
     echo2 "+ Creating VM image $name with options $@..."
-    if [ -z "$disk" ]; then
+    if [ "$disk" != "" ]; then
         # create from cloudimg
+        download_cloud_img_if_not_exist "$cloudimg" || return $?
         generate_metadata "$name" > "vm/$name/meta-data" || return $?
         generate_userdata "$username" "$password" "$name" > "vm/$name/user-data" || return $?
         ( cd "vm/$name" ; genisoimage  -output initimg.iso -volid cidata -joliet -rock user-data meta-data ) || return $?
