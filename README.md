@@ -43,6 +43,8 @@ Please wait for at least 3 minutes and try again. cloud-init is slow.
 
 You can still create a VM in other way (like plain qemu), and put the disk image into `data/vm/VM_NAME/disk.img`. Everything will work perfectly.
 
+Or you can also use an existing qcow2 image as base image. Put it into `data/base/` and use it in init.settings.
+
 ## Thanks
 
 ChatGPT
