@@ -1,4 +1,5 @@
 # name;options (name will be trimmed, options will be passed as-is)
+#                              :4 used by HostVNC
 ubuntucorp  ;-m 2G -smp 2 -vnc :10 -net user,hostfwd=tcp::30471-:22
 ndpa-build  ;-m 8G -smp 4 -vnc :11 -net user,hostfwd=tcp::30472-:22 -bios /usr/share/edk2-ovmf/x64/OVMF.fd
 archtest    ;-m 4G -smp 4 -vnc :14 -net user,hostfwd=tcp::30474-:22 -bios /usr/share/edk2-ovmf/x64/OVMF.fd
