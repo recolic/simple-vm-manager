@@ -39,6 +39,8 @@ function download_cloud_img_if_not_exist () {
     declare -A knowledge
     knowledge["focal-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     knowledge["Arch-Linux-x86_64-cloudimg.qcow2"]=https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2
+    knowledge["win10pro-22h2-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10pro-22h2-virtio-uefi.qcow2
+    knowledge["win10-tiny10-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10-tiny10-virtio-uefi.qcow2
     [ ! "${knowledge[$cloudimg]+abc}" ] && echo2 "Unknown cloudimg $cloudimg. cannot download it." && return 1
 
     echo2 "+ Downloading cloudimg $cloudimg..."
@@ -75,6 +77,7 @@ function create_vm_if_not_exist () {
         qemu-img resize "vm/$name/disk.img" "$disk" || return $?
     else
         # create from baseimg
+        download_cloud_img_if_not_exist "$cloudimg" || return $?
         qemu-img create -f qcow2 -F qcow2 -b "../../base/$cloudimg" "vm/$name/disk.img" || return $?
     fi
 }

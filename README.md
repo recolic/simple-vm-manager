@@ -24,7 +24,7 @@ Any of: aria2c / wget / curl
 
 1. Download this repo to anywhere.
 2. Modify `init.settings` and `runtime.settings`.
-3. Add `*/2 * * * * cd /path/to/my/repo && ./cron-callback.sh` into your crontab.
+3. Add `* * * * * cd /path/to/my/repo && flock -n /tmp/.vmm.lockfile ./cron-callback.sh` into your crontab.
 
 ## Supported cloudimg
 
@@ -32,6 +32,15 @@ Any of: aria2c / wget / curl
 | ---              | ---                              |
 |Ubuntu 2204 LTS   |`focal-server-cloudimg-amd64.img` |
 |Arch Linux Rolling|`Arch-Linux-x86_64-cloudimg.qcow2`|
+
+## Supported back image
+
+**Warning**: This is unofficial back image built by myself. It has preset username and password. **USE IT AT YOUR OWN RISK!!!**.
+
+|||
+| ---               | ---                              |
+|Windows 10 Pro 22H2|`win10pro-22h2-virtio-uefi.qcow2` |
+|Tiny10 Minimal 21H2|`win10-tiny10-virtio-uefi.qcow2`  |
 
 ## FAQ
 
