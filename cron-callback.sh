@@ -45,11 +45,11 @@ function download_cloud_img_if_not_exist () {
 
     echo2 "+ Downloading cloudimg $cloudimg..."
     if which aria2c; then
-        aria2c -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
+        aria2c  -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
     elif which wget; then
-        wget   -O "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
+        wget    -O "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
     elif which curl; then
-        curl   -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
+        curl -L -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
     fi
 }
 
