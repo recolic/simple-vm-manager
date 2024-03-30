@@ -2,6 +2,7 @@
 
 # You may change this directory
 workdir=./data
+ver=1.0.61
 
 _self_bin_name="$0"
 function where_is_him () {
