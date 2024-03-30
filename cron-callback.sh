@@ -112,7 +112,7 @@ function start_vm_if_not_running () {
     [[ ! -f "vm/$name/disk.img" ]] && echo2 "In start_vm, disk image vm/$name/disk.img doesn't exist. Did init_vm fail?" && return 1
     echo2 "+ Starting VM $name with options_txt '$options_txt' and uuid $uuid..."
     [[ -f "vm/$name/initimg.iso" ]] && options+=(-cdrom "vm/$name/initimg.iso")
-    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cpu host --enable-kvm -net nic,model=rtl8139 "${options[@]}" >> tmp/qemu.log 2>&1 & disown
+    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cpu host --enable-kvm -net nic,model=virtio-net-pci "${options[@]}" >> tmp/qemu.log 2>&1 & disown
 }
 
 function do_init () {
