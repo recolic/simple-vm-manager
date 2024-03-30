@@ -2,7 +2,6 @@
 
 # You may change this directory
 workdir=./data
-ver=1.0.62
 
 _self_bin_name="$0"
 function where_is_him () {
@@ -107,13 +106,13 @@ function start_vm_if_not_running () {
     local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
 
     # Check if qemu already running for this instance.
-    ps aux | grep -F "name $uuid" | grep qemu > /dev/null 2>&1 && return 0
+    ps aux | grep -F "uuid $uuid" | grep qemu > /dev/null 2>&1 && return 0
 
     # start it
     [[ ! -f "vm/$name/disk.img" ]] && echo2 "In start_vm, disk image vm/$name/disk.img doesn't exist. Did init_vm fail?" && return 1
     echo2 "+ Starting VM $name with options_txt '$options_txt' and uuid $uuid..."
     [[ -f "vm/$name/initimg.iso" ]] && options+=(-cdrom "vm/$name/initimg.iso")
-    nohup qemu-system-x86_64 --name "$uuid" -drive file="vm/$name/disk.img",if=virtio -cpu host --enable-kvm -net nic,model=virtio-net-pci "${options[@]}" >> tmp/qemu.log 2>&1 & disown
+    nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cpu host --enable-kvm -net nic,model=virtio-net-pci "${options[@]}" >> tmp/qemu.log 2>&1 & disown
 }
 
 function do_init () {
