@@ -1,9 +1,24 @@
 #!/bin/bash
 
+# You may change this directory
 workdir=./data
-mkdir -p "$workdir"
-cd "$workdir" || exit $?
-mkdir -p base vm tmp
+
+_self_bin_name="$0"
+function where_is_him () {
+    SOURCE="$1"
+    while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+        DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+        SOURCE="$(readlink "$SOURCE")"
+        [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    done
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    echo -n "$DIR"
+}
+function where_am_i () {
+    _my_path=`type -p ${_self_bin_name}`
+    [[ "$_my_path" = "" ]] && where_is_him "$_self_bin_name" || where_is_him "$_my_path"
+}
+_script_path=`where_am_i`
 
 function echo2 () {
     echo "$@" 1>&2
@@ -44,11 +59,11 @@ function download_cloud_img_if_not_exist () {
     [ ! "${knowledge[$cloudimg]+abc}" ] && echo2 "Unknown cloudimg $cloudimg. cannot download it." && return 1
 
     echo2 "+ Downloading cloudimg $cloudimg..."
-    if which aria2c; then
+    if aria2c --version >/dev/null; then
         aria2c  -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
-    elif which wget; then
+    elif wget --version >/dev/null; then
         wget    -O "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
-    elif which curl; then
+    elif curl --version >/dev/null; then
         curl -L -o "base/$cloudimg" "${knowledge[$cloudimg]}" || ! echo2 "Failed to download ubuntu cloudimg" || return $?
     fi
 }
@@ -122,7 +137,7 @@ function do_init () {
                 echo2 "Error: Bad configuration line: $line"
             fi
         fi
-    done < ../init.settings
+    done < "$_script_path/init.settings"
 }
 
 function do_start () {
@@ -146,8 +161,12 @@ function do_start () {
                 echo2 "Error: Bad configuration line: $line"
             fi
         fi
-    done < ../runtime.settings
+    done < "$_script_path/runtime.settings"
 }
+
+mkdir -p "$workdir"
+cd "$workdir" || exit $?
+mkdir -p base vm tmp
 
 do_init
 do_start
