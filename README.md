@@ -24,7 +24,7 @@ Any of: aria2c / wget / curl
 
 1. Download this repo to anywhere.
 2. Modify `init.settings` and `runtime.settings`.
-3. Add `* * * * * flock -n /tmp/.vmm.lockfile /path/to/your/cron-callback.sh` into your crontab.
+3. Add `* * * * * /path/to/your/cron-callback.sh` into your crontab.
 
 ## Supported cloudimg
 

@@ -2,7 +2,7 @@
 
 # You may change this directory
 workdir=./data
-ver=1.0.61
+ver=1.0.62
 
 _self_bin_name="$0"
 function where_is_him () {
@@ -164,6 +164,14 @@ function do_start () {
         fi
     done < "$_script_path/runtime.settings"
 }
+
+# Check if current script is already running. Stupid flock is very unreliable.
+for pid in $(pidof -x "$0"); do
+    if [ $pid != $$ ]; then
+        echo "$0 : Process is already running with PID $pid"
+        exit 1
+    fi
+done
 
 mkdir -p "$workdir"
 cd "$workdir" || exit $?
