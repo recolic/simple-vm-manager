@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # You may change this directory
-workdir=./data
+svm_workdir="${svm_workdir:-./data}"
 ver=1.0.62
 
 _self_bin_name="$0"
@@ -173,8 +173,8 @@ for pid in $(pidof -x "$0"); do
     fi
 done
 
-mkdir -p "$workdir"
-cd "$workdir" || exit $?
+mkdir -p "$svm_workdir"
+cd "$svm_workdir" || exit $?
 mkdir -p base vm tmp
 
 do_init
