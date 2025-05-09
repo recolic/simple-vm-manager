@@ -26,21 +26,24 @@ Any of: aria2c / wget / curl
 2. Modify `init.settings` and `runtime.settings`.
 3. Add `* * * * * bash /path/to/your/cron-callback.sh` into your crontab.
 
-## Supported cloudimg
+## Built-in cloudimg
 
-|||
+> Add more cloudimg into cron-callback.sh.
+
+|                  |name for init.settings            |
 | ---              | ---                              |
-|Ubuntu 2204 LTS   |`focal-server-cloudimg-amd64.img` |
+|Ubuntu 2204 LTS   |`ubuntu-22.04-server-cloudimg-amd64.img` |
+|Ubuntu 2404 LTS   |`ubuntu-24.04-server-cloudimg-amd64.img` |
 |Arch Linux Rolling|`Arch-Linux-x86_64-cloudimg.qcow2`|
 
-## Supported back image
+## Built-in back image
 
-**Warning**: This is unofficial back image built by myself. It has preset username and password. **USE IT AT YOUR OWN RISK!!!**.
+**Warning**: This is unofficial back image built by myself. Default login `recolic` password `<TODO>`. **USE IT AT YOUR OWN RISK!!!**.
 
-|||
+|                   |name for init.settings            |
 | ---               | ---                              |
 |Windows 10 Pro 22H2|`win10pro-22h2-virtio-uefi.qcow2` |
-|Tiny10 Minimal 21H2|`win10-tiny10-virtio-uefi.qcow2`  |
+|Tiny10 21H2(no RDP)|`win10-tiny10-virtio-uefi.qcow2`  |
 
 ## FAQ
 
