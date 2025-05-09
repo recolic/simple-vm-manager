@@ -38,7 +38,7 @@ Any of: aria2c / wget / curl
 
 ## Built-in back image
 
-**Warning**: This is unofficial back image built by myself. Default login `recolic` password `<TODO>`. **USE IT AT YOUR OWN RISK!!!**.
+**Warning**: This is unofficial back image built by myself. Default login `recolic` password `1`. **USE IT AT YOUR OWN RISK!!!**.
 
 |                   |name for init.settings            |
 | ---               | ---                              |
