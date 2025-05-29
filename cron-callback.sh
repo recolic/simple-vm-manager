@@ -53,11 +53,19 @@ function download_cloud_img_if_not_exist () {
     [[ -f "base/$cloudimg" ]] && return
 
     declare -A knowledge
+    # old naming
     knowledge["focal-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     knowledge["ubuntu-22.04-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img
     knowledge["ubuntu-24.04-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
-    knowledge["ubuntu-24.04-server-cloudimg-arm64.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img
     knowledge["Arch-Linux-x86_64-cloudimg.qcow2"]=https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2
+    # new naming
+    knowledge["ubuntu-18.04-server.img"]=https://cloud-images.ubuntu.com/releases/18.04/release/ubuntu-18.04-server-cloudimg-amd64.img
+    knowledge["ubuntu-20.04-server.img"]=https://cloud-images.ubuntu.com/releases/20.04/release/ubuntu-20.04-server-cloudimg-amd64.img
+    knowledge["ubuntu-22.04-server.img"]=https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img
+    knowledge["ubuntu-24.04-server.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
+    knowledge["ubuntu-24.04-server-arm64.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img
+    knowledge["archlinux.img"]=https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2
+    # windows baseimg, username r, password 1
     knowledge["win10pro-22h2-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10pro-22h2-virtio-uefi.qcow2
     knowledge["win10-tiny10-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10-tiny10-virtio-uefi.qcow2
     [ ! "${knowledge[$cloudimg]+abc}" ] && echo2 "Unknown cloudimg $cloudimg. cannot download it." && return 1
