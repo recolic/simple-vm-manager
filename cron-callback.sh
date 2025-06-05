@@ -53,7 +53,7 @@ function download_cloud_img_if_not_exist () {
     [[ -f "base/$cloudimg" ]] && return
 
     declare -A knowledge
-    # old naming
+    # old naming, deprecated
     knowledge["focal-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     knowledge["ubuntu-22.04-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img
     knowledge["ubuntu-24.04-server-cloudimg-amd64.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img

@@ -1,10 +1,13 @@
+# Example config file
+
 ## init VM from cloudimg
-# name;cloudimg;disk;username;password (space will be trimmed)
-ndpa-build  ;focal-server-cloudimg-amd64.img ;60G;r;1
-gitlab-ci-ms;focal-server-cloudimg-amd64.img ;50G;r;1
-archtest    ;Arch-Linux-x86_64-cloudimg.qcow2;50G;r;1
+## name       ;cloudimg;disk;username;password (space will be trimmed)
+# ndpa-build  ;ubuntu-22.04-server.img;60G;r;1
+# gitlab-ci-ms;ubuntu-22.04-server.img;50G;user;pass
+# archtest    ;archlinux.img          ;50G;r;1
+testvm        ;ubuntu-22.04-server.img;50G;r;1
 
 ## or init VM from pre-deployed backing image (please put it into data/base/)
-# name;existing_img_fname
-ubuntucorp  ;ubuntu-intune.qcow2
-devbox      ;win10pro-22h2-virtio-uefi.qcow2
+## name       ;base_img_fname
+# ubuntucorp  ;ubuntu-intune.qcow2
+# devbox      ;win10pro-22h2-virtio-uefi.qcow2
