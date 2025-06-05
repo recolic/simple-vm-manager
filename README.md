@@ -30,11 +30,13 @@ Any of: aria2c / wget / curl
 
 > Add more cloudimg into cron-callback.sh.
 
-|                  |name for init.settings            |
-| ---              | ---                              |
-|Ubuntu 2204 LTS   |`ubuntu-22.04-server-cloudimg-amd64.img` |
-|Ubuntu 2404 LTS   |`ubuntu-24.04-server-cloudimg-amd64.img` |
-|Arch Linux Rolling|`Arch-Linux-x86_64-cloudimg.qcow2`|
+|                  |name for init.settings    |
+| ---              | ---                      |
+|Ubuntu 1804 LTS   |`ubuntu-18.04-server.img` |
+|Ubuntu 2004 LTS   |`ubuntu-20.04-server.img` |
+|Ubuntu 2204 LTS   |`ubuntu-22.04-server.img` |
+|Ubuntu 2404 LTS   |`ubuntu-24.04-server.img` |
+|Arch Linux Rolling|`archlinux.img`           |
 
 ## Built-in back image
 
