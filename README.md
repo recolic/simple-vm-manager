@@ -36,6 +36,9 @@ Any of: aria2c / wget / curl
 |Ubuntu 2004 LTS   |`ubuntu-20.04-server.img` |
 |Ubuntu 2204 LTS   |`ubuntu-22.04-server.img` |
 |Ubuntu 2404 LTS   |`ubuntu-24.04-server.img` |
+|Debian 10         |`debian-10.img` |
+|Debian 11         |`debian-11.img` |
+|Debian 12         |`debian-12.img` |
 |Arch Linux Rolling|`archlinux.img`           |
 
 ## Built-in back image
