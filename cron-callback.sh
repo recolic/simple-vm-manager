@@ -2,7 +2,7 @@
 
 # You may change this directory
 svm_workdir="${svm_workdir:-./data}"
-ver=1.0.62
+ver=1.0.63
 
 _self_bin_name="$0"
 function where_is_him () {
@@ -90,8 +90,9 @@ function create_vm_if_not_exist () {
 
     # Check if disk img already exists.
     [[ -f "vm/$name/disk.img" ]] && return
+    [[ -e "vm/$name" ]] && mv "vm/$name" "vm/$name.backup_$RANDOM"
 
-    rm -rf "vm/$name" ; mkdir -p "vm/$name"
+    mkdir -p "vm/$name"
 
     echo2 "+ Creating VM image $name with options $@..."
     if [ "$disk" != "" ]; then
