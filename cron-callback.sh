@@ -90,9 +90,7 @@ function create_vm_if_not_exist () {
 
     # Check if disk img already exists.
     [[ -f "vm/$name/disk.img" ]] && return
-    [[ -e "vm/$name" ]] && mv "vm/$name" "vm/$name.backup_$RANDOM"
-
-    mkdir -p "vm/$name"
+    [[ -e "vm/$name" ]] && mv "vm/$name" "vm/$name.backup_$RANDOM" ; mkdir -p "vm/$name"
 
     echo2 "+ Creating VM image $name with options $@..."
     if [ "$disk" != "" ]; then
