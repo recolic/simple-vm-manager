@@ -72,6 +72,7 @@ function download_cloud_img_if_not_exist () {
     # windows baseimg, username r, password 1
     knowledge["win10pro-22h2-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10pro-22h2-virtio-uefi.qcow2
     knowledge["win10-tiny10-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10-tiny10-virtio-uefi.qcow2
+    knowledge["win10ltsc-2021-virtio-uefi.qcow2"]=https://recolic.net/hms.php?/systems/win10ltsc-2021-virtio-uefi.qcow2
     [ ! "${knowledge[$cloudimg]+abc}" ] && echo2 "Unknown cloudimg $cloudimg. cannot download it." && return 1
 
     echo2 "+ Downloading cloudimg $cloudimg..."

@@ -41,14 +41,17 @@ Any of: aria2c / wget / curl
 |Debian 12         |`debian-12.img` |
 |Arch Linux Rolling|`archlinux.img`           |
 
-## Built-in back image
+## Built-in back image (virtio support)
 
 **Warning**: This is unofficial back image built by myself. Default login `recolic` password `1`. **USE IT AT YOUR OWN RISK!!!**.
 
-|                   |name for init.settings            |
-| ---               | ---                              |
-|Windows 10 Pro 22H2|`win10pro-22h2-virtio-uefi.qcow2` |
-|Tiny10 21H2(no RDP)|`win10-tiny10-virtio-uefi.qcow2`  |
+|                    |name for init.settings            |
+| ---                | ---                              |
+|Windows 10 Pro 22H2 |`win10pro-22h2-virtio-uefi.qcow2` |
+|Tiny10 21H2(no RDP) |`win10-tiny10-virtio-uefi.qcow2`  |
+|Windows 10 LTSC 2021|`win10ltsc-2021-virtio-uefi.qcow2`|
+
+> Download from my NAS is slow. [Click here](https://recolic.net/blog/post/qemukvm-create-windows-1011-vm-with-tpm-and-secure-boot) to learn how to make win+virtio image by yourself.
 
 ## FAQ
 
