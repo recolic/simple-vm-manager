@@ -40,6 +40,8 @@ Any of: aria2c / wget / curl
 |Debian 11         |`debian-11.img` |
 |Debian 12         |`debian-12.img` |
 |Arch Linux Rolling|`archlinux.img`           |
+|Alpine 3.23.2     |`alpine-23-bios.img`|
+|Alpine 3.23.2 UEFI|`alpine-23-uefi.img`|
 
 ## Built-in back image (virtio support)
 
