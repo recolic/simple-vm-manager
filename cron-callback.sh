@@ -190,6 +190,8 @@ for pid in $(pidof -x "$0"); do
     fi
 done
 
+[ -f /tmp/.disable-simple-vmm ] && echo "/tmp/.disable-simple-vmm exists. exiting..." && exit 0
+
 mkdir -p "$svm_workdir"
 cd "$svm_workdir" || exit $?
 mkdir -p base vm tmp
