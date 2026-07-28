@@ -1,4 +1,21 @@
+# Example VM config file
+
+;BEGIN_IMAGE_SETTING
+
+## init VM from cloudimg
+## name       ;cloudimg;disk;username;password (space will be trimmed)
+# ndpa-build  ;ubuntu-22.04-server.img;60G;r;1
+# gitlab-ci-ms;ubuntu-22.04-server.img;50G;user;pass
+# archtest    ;archlinux.img          ;50G;r;1
+testvm        ;ubuntu-22.04-server.img;50G;r;1
+
+## or init VM from pre-deployed backing image (please put it into data/base/)
+## name       ;base_img_fname
+# ubuntucorp  ;ubuntu-intune.qcow2
+# devbox      ;win10pro-22h2-virtio-uefi.qcow2
 # Example config file
+
+;BEGIN_RUNTIME_SETTING
 
 ## name;options (name will be trimmed, options will be passed as-is)
 # ubuntucorp  ;-m 2G -smp 2 -vnc :10 -net user,hostfwd=tcp::30471-:22

@@ -23,7 +23,7 @@ Any of: aria2c / wget / curl
 ## Usage
 
 1. Download this repo to anywhere.
-2. Modify `init.settings` and `runtime.settings`.
+2. Modify `vm.settings`.
 3. Add `* * * * * bash /path/to/your/cron-callback.sh` into your crontab.
 
 ## Built-in cloudimg
