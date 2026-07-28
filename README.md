@@ -36,6 +36,7 @@ Any of: aria2c / wget / curl
 |Ubuntu 2004 LTS   |`ubuntu-20.04-server.img` |
 |Ubuntu 2204 LTS   |`ubuntu-22.04-server.img` |
 |Ubuntu 2404 LTS   |`ubuntu-24.04-server.img` |
+|Ubuntu 2604 LTS   |`ubuntu-26.04-server.img` |
 |Debian 10         |`debian-10.img` |
 |Debian 11         |`debian-11.img` |
 |Debian 12         |`debian-12.img` |
@@ -56,6 +57,10 @@ Any of: aria2c / wget / curl
 > Download from my NAS is slow. [Click here](https://recolic.net/blog/post/qemukvm-create-windows-1011-vm-with-tpm-and-secure-boot) to learn how to make win+virtio image by yourself.
 
 ## FAQ
+
+### ARM64 VM on x64 host?
+
+Not yet.
 
 ### SSH not working for my new VM
 

@@ -59,6 +59,7 @@ function download_cloud_img_if_not_exist () {
     knowledge["ubuntu-22.04-server.img"]=https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img
     knowledge["ubuntu-24.04-server.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
     knowledge["ubuntu-24.04-server-arm64.img"]=https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img
+    knowledge["ubuntu-26.04-server.img"]=https://cloud-images.ubuntu.com/releases/26.04/release/ubuntu-26.04-server-cloudimg-amd64.img
     knowledge["debian-10.img"]=https://cloud.debian.org/images/cloud/buster/latest/debian-10-genericcloud-amd64.qcow2
     knowledge["debian-11.img"]=https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     knowledge["debian-12.img"]=https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
