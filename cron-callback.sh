@@ -119,15 +119,15 @@ function create_vm_if_not_exist () {
     fi
 }
 
-g_touched_uuids=()
 function start_vm_if_not_running () {
+    # output: uuid > stdout
     local name=$1
     local options_txt="$2"
     read -a options <<< "$options_txt"
 
     # For tracking started instance
     local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
-    g_touched_uuids+=("$uuid")
+    echo "$uuid"
 
     # Check if qemu already running for this instance.
     ps aux | grep -F "uuid $uuid" | grep qemu > /dev/null 2>&1 && return 0
@@ -140,6 +140,8 @@ function start_vm_if_not_running () {
 }
 
 function do_init () {
+    # input: init config lines < stdin
+    # output: none
     while IFS= read -r line; do
         # Ignore lines starting with #
         if [[ "$line" =~ ^\# ]]; then
@@ -165,6 +167,8 @@ function do_init () {
 }
 
 function do_start () {
+    # input: runtime config lines < stdin
+    # output: uuid > stdout
     while IFS= read -r line; do
         # Ignore lines starting with #
         if [[ "$line" =~ ^\# ]]; then
@@ -189,9 +193,12 @@ function do_start () {
 }
 
 function do_cleanup () {
+    # input: uuid < stdin
+    local touched_uuids=()
+    mapfile -t touched_uuids
     # for ps aux every qemu uuid process, kill if not touched.
     ps aux | grep qemu | grep -oE 'uuid [0-9a-fA-F-]{36}' | cut -d ' ' -f 2 | while read -r uuid; do
-        if [[ ! " ${g_touched_uuids[*]} " =~ " $uuid " ]]; then
+        if [[ ! " ${touched_uuids[*]} " =~ " $uuid " ]]; then
             echo2 "+ Stopping removed VM with uuid $uuid..."
             pkill -f -- "qemu.*uuid $uuid"
         fi
@@ -213,5 +220,4 @@ cd "$svm_workdir" || exit $?
 mkdir -p base vm tmp
 
 config_get_section   "IMAGE_SETTING" "$_script_path/vm.settings" | do_init
-config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_start
-do_cleanup
+config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_start | do_cleanup
