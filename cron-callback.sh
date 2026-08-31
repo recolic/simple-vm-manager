@@ -2,7 +2,7 @@
 
 # You may change this directory
 svm_workdir="${svm_workdir:-./data}"
-ver=1.0.64
+ver=1.0.65
 
 _self_bin_name="$0"
 function where_is_him () {
@@ -119,6 +119,7 @@ function create_vm_if_not_exist () {
     fi
 }
 
+g_touched_uuids=()
 function start_vm_if_not_running () {
     local name=$1
     local options_txt="$2"
@@ -126,6 +127,7 @@ function start_vm_if_not_running () {
 
     # For tracking started instance
     local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
+    g_touched_uuids+=("$uuid")
 
     # Check if qemu already running for this instance.
     ps aux | grep -F "uuid $uuid" | grep qemu > /dev/null 2>&1 && return 0
@@ -186,6 +188,16 @@ function do_start () {
     done
 }
 
+function do_cleanup () {
+    # for ps aux every qemu uuid process, kill if not touched.
+    ps aux | grep qemu | grep -oE 'uuid [0-9a-fA-F-]{36}' | cut -d ' ' -f 2 | while read -r uuid; do
+        if [[ ! " ${g_touched_uuids[*]} " =~ " $uuid " ]]; then
+            echo2 "+ Stopping removed VM with uuid $uuid..."
+            pkill -f -- "qemu.*uuid $uuid"
+        fi
+    done
+}
+
 # Check if current script is already running. Stupid flock is very unreliable.
 for pid in $(pidof -x "$0"); do
     if [ $pid != $$ ]; then
@@ -202,3 +214,4 @@ mkdir -p base vm tmp
 
 config_get_section   "IMAGE_SETTING" "$_script_path/vm.settings" | do_init
 config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_start
+do_cleanup
