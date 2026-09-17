@@ -2,7 +2,7 @@
 
 # You may change this directory
 svm_workdir="${svm_workdir:-./data}"
-ver=1.0.65
+ver=1.0.66
 
 _self_bin_name="$0"
 function where_is_him () {
@@ -26,6 +26,9 @@ function echo2 () {
 }
 function config_get_section () {
     sed -n '/^;BEGIN_'$1'/,/^;BEGIN_/{/^;BEGIN_/!p}' "$2"
+}
+function to_uuid () {
+    uuidgen --namespace @oid --name "qemu.$1" --sha1
 }
 function generate_metadata () {
     local name=$1
@@ -126,8 +129,7 @@ function start_vm_if_not_running () {
     read -a options <<< "$options_txt"
 
     # For tracking started instance
-    local uuid=`uuidgen --namespace @oid --name "qemu.$name" --sha1`
-    echo "$uuid"
+    local uuid=$(to_uuid "$name")
 
     # Check if qemu already running for this instance.
     ps aux | grep -F "uuid $uuid" | grep qemu > /dev/null 2>&1 && return 0
@@ -139,63 +141,55 @@ function start_vm_if_not_running () {
     nohup qemu-system-x86_64 --uuid "$uuid" -drive file="vm/$name/disk.img",if=virtio -cpu host --enable-kvm -net nic,model=virtio-net-pci "${options[@]}" >> tmp/qemu.log 2>&1 & disown
 }
 
+function iter_line () {
+    while IFS=$' \t' read -r line || [[ -n $line ]]; do
+        [[ -z $line || $line == \#* ]] || return 0
+    done
+    return 1
+}
+
 function do_init () {
     # input: init config lines < stdin
     # output: none
-    while IFS= read -r line; do
-        # Ignore lines starting with #
-        if [[ "$line" =~ ^\# ]]; then
-            continue
-        fi
-        # Trim leading and trailing whitespaces
-        line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        # Check if the line is non-empty
-        if [ -n "$line" ]; then
-            # Parse the line as "name;cloudimg;disk;username;password", trim space
-            IFS=';' read -r name cloudimg disk username password <<< "$(echo "$line" | tr -s '[:space:]' ';')"
+    while iter_line; do
+        # Parse the line as "name;cloudimg;disk;username;password", trim space
+        IFS=';' read -r name cloudimg disk username password <<< "$(echo "$line" | tr -s '[:space:]' ';')"
 
-            # 2 options or 5 options allowed, otherwise bad config line.
-            if [ -n "$name" ] && [ -n "$cloudimg" ] && [ -n "$disk" ] && [ -n "$username" ] && [ -n "$password" ]; then
-                create_vm_if_not_exist "$name" "$cloudimg" "$disk" "$username" "$password" || echo2 "Failed to create_vm_if_not_exist. $?"
-            elif [ -n "$name" ] && [ -n "$cloudimg" ] && [ ! -n "$disk" ] && [ ! -n "$username" ] && [ ! -n "$password" ]; then
-                create_vm_if_not_exist "$name" "$cloudimg" || echo2 "Failed to create_vm_if_not_exist. $?"
-            else
-                echo2 "Error: Bad configuration line: $line"
-            fi
+        # 2 options or 5 options allowed, otherwise bad config line.
+        if [ -n "$name" ] && [ -n "$cloudimg" ] && [ -n "$disk" ] && [ -n "$username" ] && [ -n "$password" ]; then
+            create_vm_if_not_exist "$name" "$cloudimg" "$disk" "$username" "$password" || echo2 "Failed to create_vm_if_not_exist. $?"
+        elif [ -n "$name" ] && [ -n "$cloudimg" ] && [ ! -n "$disk" ] && [ ! -n "$username" ] && [ ! -n "$password" ]; then
+            create_vm_if_not_exist "$name" "$cloudimg" || echo2 "Failed to create_vm_if_not_exist. $?"
+        else
+            echo2 "Error: Bad configuration line: $line"
         fi
     done
 }
 
 function do_start () {
     # input: runtime config lines < stdin
-    # output: uuid > stdout
-    while IFS= read -r line; do
-        # Ignore lines starting with #
-        if [[ "$line" =~ ^\# ]]; then
-            continue
-        fi
-        # Trim leading and trailing whitespaces
-        line=$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-        # Check if the line is non-empty
-        if [ -n "$line" ]; then
-            # Parse the line as "name;options", only trim space in name, options can contain ;
-            name=$(echo "$line" | sed -e 's/[[:space:]]*;.*$//' -e 's/^[[:space:]]*//')
-            options=$(echo "$line" | sed 's/^[^;]*;//')
+    # output: none
+    while iter_line; do
+        # Parse the line as "name;options", only trim space in name, options can contain ;
+        name=$(echo "$line" | sed -e 's/[[:space:]]*;.*$//' -e 's/^[[:space:]]*//')
+        options=$(echo "$line" | sed 's/^[^;]*;//')
     
-            # Check if the name is empty
-            if [ -n "$name" ]; then
-                start_vm_if_not_running "$name" "$options" || echo2 "Failed to start_vm_if_not_running. $?"
-            else
-                echo2 "Error: Bad configuration line: $line"
-            fi
+        if [ -n "$name" ]; then
+            start_vm_if_not_running "$name" "$options" || echo2 "Failed to start_vm_if_not_running. $?"
+        else
+            echo2 "Error: Bad configuration line: $line"
         fi
     done
 }
 
 function do_cleanup () {
-    # input: uuid < stdin
+    # input: runtime config lines < stdin
     local touched_uuids=()
-    mapfile -t touched_uuids
+    while iter_line; do
+        name=$(echo "$line" | sed -e 's/[[:space:]]*;.*$//' -e 's/^[[:space:]]*//')
+        [ -n "$name" ] && touched_uuids+=($(to_uuid "$name"))
+    done
+
     # for ps aux every qemu uuid process, kill if not touched.
     ps aux | grep qemu | grep -oE 'uuid [0-9a-fA-F-]{36}' | cut -d ' ' -f 2 | while read -r uuid; do
         if [[ ! " ${touched_uuids[*]} " =~ " $uuid " ]]; then
@@ -220,4 +214,5 @@ cd "$svm_workdir" || exit $?
 mkdir -p base vm tmp
 
 config_get_section   "IMAGE_SETTING" "$_script_path/vm.settings" | do_init
-config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_start | do_cleanup
+config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_cleanup
+config_get_section "RUNTIME_SETTING" "$_script_path/vm.settings" | do_start
